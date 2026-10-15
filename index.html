@@ -157,41 +157,55 @@ function move(e){
  if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;
  drag.el.style.left=(e.clientX-drag.dx)+"px";drag.el.style.top=(e.clientY-drag.dy)+"px";
 }
+
 function end(e){
  if(!drag)return;
+
  const d=drag;
  const hit=document.elementFromPoint(e.clientX,e.clientY);
  const slotEl=hit&&hit.closest(".slot");
  const inPlay=hit&&hit.closest("#play");
+
  if(d.moved){
   save();
+
   const oldSlot=d.t.slot;
+
   if(slotEl){
-   const index=Number(slotEl.dataset.slot),other=occupied(index);
-   if(other&&other.id!==d.t.id)other.slot=oldSlot;
-   d.t.slot=index;say("Letter "+d.t.ch+" placed in box "+(index+1)+".");
+   const index=Number(slotEl.dataset.slot);
+   const other=occupied(index);
+
+   if(other&&other.id!==d.t.id){
+    other.slot=oldSlot;
+   }
+
+   d.t.slot=index;
+   say("Letter "+d.t.ch+" placed in box "+(index+1)+".");
+
   }else if(inPlay){
    const r=play.getBoundingClientRect();
+
    d.t.slot=null;
-   d.t.x=Math.max(0,Math.min(r.width-42,e.clientX-r.left-d.dx+ (e.clientX-d.startX)));
-   d.t.y=Math.max(0,Math.min(r.height-42,e.clientY-r.top-d.dy+ (e.clientY-d.startY)));
+   d.t.x=Math.max(0,Math.min(r.width-42,e.clientX-r.left-d.dx));
+   d.t.y=Math.max(0,Math.min(r.height-42,e.clientY-r.top-d.dy));
+
    say("Letter moved in workspace.");
+
   }else if(d.fromSlot!==null){
    const r=play.getBoundingClientRect();
+
    d.t.slot=null;
    d.t.x=Math.max(0,Math.min(r.width-42,e.clientX-r.left-21));
    d.t.y=Math.max(0,Math.min(r.height-42,e.clientY-r.top-21));
+
    say("Letter returned to workspace.");
-  }else{
-   const r=play.getBoundingClientRect();
-   d.t.x=Math.max(0,Math.min(r.width-42,e.clientX-r.left-21));
-   d.t.y=Math.max(0,Math.min(r.height-42,e.clientY-r.top-21));
-   say("Letter moved.");
   }
  }
+
  cleanup();
  render();
 }
+
 function cleanup(){
  if(!drag)return;
  drag=null;
