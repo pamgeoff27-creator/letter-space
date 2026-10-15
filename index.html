@@ -119,18 +119,39 @@ function addLetters(value){
  letters=chars.map((ch,i)=>({id:nextId++,ch,slot:null,x:12+(i%5)*48,y:12+Math.floor(i/5)*49}));
  render();say(size+" letters added. Drag them freely or place them in the boxes.");
 }
+
 function start(e,t,el){
  if(e.button!==undefined&&e.button!==0)return;
  e.preventDefault();
+
  const rect=el.getBoundingClientRect();
- drag={t,el,fromSlot:t.slot,startX:e.clientX,startY:e.clientY,dx:e.clientX-rect.left,dy:e.clientY-rect.top,moved:false};
+
+ drag={
+  t,
+  el,
+  fromSlot:t.slot,
+  startX:e.clientX,
+  startY:e.clientY,
+  dx:e.clientX-rect.left,
+  dy:e.clientY-rect.top,
+  moved:false
+ };
+
  el.classList.add("dragging");
- el.style.position="fixed";el.style.left=rect.left+"px";el.style.top=rect.top+"px";el.style.width=rect.width+"px";el.style.height=rect.height+"px";
+ el.style.position="fixed";
+ el.style.left=rect.left+"px";
+ el.style.top=rect.top+"px";
+ el.style.width=rect.width+"px";
+ el.style.height=rect.height+"px";
+ el.style.zIndex="9999";
+
  document.body.appendChild(el);
+
  document.addEventListener("pointermove",move);
  document.addEventListener("pointerup",end);
  document.addEventListener("pointercancel",cancel);
 }
+
 function move(e){
  if(!drag)return;
  if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;
