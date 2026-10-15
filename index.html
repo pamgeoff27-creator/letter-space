@@ -4,242 +4,606 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#ffffff">
 <title>Anagram Workspace</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{max-width:680px;margin:auto;padding:18px 14px 35px}
-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.logo{display:grid;grid-template-columns:repeat(3,12px);gap:2px;padding:10px;border-radius:50%;background:#f5f5f7}
-.logo span{width:12px;height:12px;border:2px solid #111;border-radius:2px}
-.logo span:nth-child(2),.logo span:nth-child(4),.logo span:nth-child(8){background:#111}
-h1{font-size:clamp(21px,5vw,27px);letter-spacing:-.6px;margin:0}
-.input{width:100%;border:1px solid #ddd;border-radius:11px;padding:12px;font-size:19px;text-transform:uppercase}
-.answer-wrap{overflow-x:auto;padding:0 2px;margin:42px 0 8px}
-.answer{display:flex;gap:4px;min-height:46px;width:max-content;min-width:100%;justify-content:center}
-.slot{width:clamp(29px,7.2vw,43px);height:44px;flex:0 0 clamp(29px,7.2vw,43px);border:3px solid #3290f4;border-radius:9px;display:grid;place-items:center}
-.slot .tile{width:100%;height:100%;font-size:24px}
-.workspace{position:relative;background:#f1f1f4;border-radius:23px 23px 18px 18px;margin-top:5px;overflow:hidden}
-.play-area{height:155px;position:relative;touch-action:pan-y}
-.tile{position:absolute;width:42px;height:42px;border-radius:10px;background:#1685ed;color:white;display:grid;place-items:center;font-size:25px;font-weight:700;user-select:none;touch-action:none;cursor:grab;box-shadow:0 1px 2px #0001}
-.tile.dragging{z-index:20;cursor:grabbing;box-shadow:0 6px 15px #0003}
-.tile.in-slot{position:relative;left:auto!important;top:auto!important;background:#1685ed}
-.resize{height:57px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:#e9e9ed;touch-action:none;cursor:ns-resize;color:#888;font-size:13px;user-select:none}
-.handle{width:52px;height:6px;border-radius:8px;background:#c5c5ca}
-.dots{letter-spacing:3px;font-size:12px;color:#c5c5ca}
-.buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:54px}
-button{border:0;border-radius:11px;padding:12px 5px;background:#e9e9ed;color:#111;font-size:clamp(13px,3.6vw,18px);font-weight:650;min-height:50px;cursor:pointer}
-button:disabled{opacity:.4}
-button.primary{background:#1685ed;color:white}
-.extra{display:flex;justify-content:center;margin-top:14px}
-.extra button{min-width:150px}
-.status{text-align:center;color:#777;font-size:13px;min-height:20px;margin-top:18px}
-@media(max-width:390px){.app{padding:16px 10px}.tile{width:37px;height:37px}.buttons{gap:5px}.play-area{height:155px}}
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #fff;
+    color: #252b35;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .logo {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #3679e8;
+    border-radius: 12px;
+    color: #3679e8;
+    font-size: 25px;
+    font-weight: 750;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(23px, 5vw, 32px);
+    letter-spacing: -0.8px;
+  }
+
+  .entry-row {
+    display: flex;
+    gap: 9px;
+    margin-bottom: 22px;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 14px;
+    border: 1px solid #cbd2dc;
+    border-radius: 9px;
+    font-size: 17px;
+  }
+
+  button {
+    padding: 11px 15px;
+    border: 1px solid #d3d9e2;
+    border-radius: 9px;
+    background: white;
+    color: #283241;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:hover { background: #f1f5fb; }
+  button:disabled { opacity: .4; cursor: default; }
+
+  .primary {
+    border-color: #3679e8;
+    background: #3679e8;
+    color: white;
+  }
+
+  .primary:hover { background: #2867cf; }
+
+  .section-label {
+    margin: 0 0 9px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #5c6675;
+  }
+
+  .answer-scroll {
+    overflow-x: auto;
+    padding: 2px 1px 12px;
+    margin-bottom: 14px;
+  }
+
+  #answer {
+    display: flex;
+    gap: 5px;
+    min-height: 48px;
+    width: max-content;
+  }
+
+  .slot {
+    width: 39px;
+    height: 43px;
+    flex: 0 0 39px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #83afea;
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .slot.over {
+    background: #e4efff;
+    border-color: #2468d8;
+  }
+
+  #play-area {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    border: 1px solid #e1e5eb;
+    border-radius: 10px;
+    background: #f2f4f7;
+    touch-action: pan-y;
+  }
+
+  .tile {
+    position: absolute;
+    width: 40px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #2e70d8;
+    border-radius: 6px;
+    background: #397fe8;
+    color: white;
+    font-size: 21px;
+    font-weight: 700;
+    box-shadow: 0 2px 3px #172b461c;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    z-index: 1;
+  }
+
+  .slot .tile {
+    position: relative;
+    inset: auto;
+    width: 35px;
+    height: 37px;
+    box-shadow: none;
+  }
+
+  .tile:active { cursor: grabbing; }
+
+  .workspace-frame { position: relative; }
+
+  #resize {
+    width: 52px;
+    height: 13px;
+    margin: 0 auto 18px;
+    border-bottom: 3px solid #cbd2dc;
+    border-radius: 0 0 8px 8px;
+    cursor: ns-resize;
+    touch-action: none;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+  }
+
+  #status {
+    min-height: 24px;
+    margin-top: 13px;
+    color: #626d7c;
+    font-size: 14px;
+  }
+
+  .hint {
+    margin-top: 10px;
+    color: #6d7785;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  #ghost {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    opacity: .95;
+    transform: translate(-50%, -50%);
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 14px; }
+    .entry-row button { padding: 10px 12px; }
+    .slot { width: 34px; flex-basis: 34px; }
+    .controls button { padding: 10px 11px; }
+  }
 </style>
 </head>
 <body>
 <main class="app">
-<header>
-<div class="logo" aria-hidden="true">
-<span></span><span></span><span></span>
-<span></span><span></span><span></span>
-<span></span><span></span><span></span>
-</div>
-<h1>Anagram Workspace</h1>
-</header>
+  <header>
+    <div class="logo" aria-hidden="true">A</div>
+    <h1>Anagram Workspace</h1>
+  </header>
 
-<form id="entry">
-<input id="letters" class="input" placeholder="Enter your letters" value="" autocomplete="off" autocapitalize="characters" aria-label="Enter anagram letters">
-</form>
+  <form id="entry-form" class="entry-row">
+    <input id="entry" type="text" placeholder="Enter a word, e.g. GOLDILOCKS"
+      aria-label="Word to rearrange" autocomplete="off" spellcheck="false">
+    <button class="primary" type="submit">Create</button>
+  </form>
 
-<div class="answer-wrap"><div class="answer" id="answer"></div></div>
+  <p class="section-label">ANSWER</p>
+  <div class="answer-scroll">
+    <div id="answer" aria-label="Answer boxes"></div>
+  </div>
 
-<section class="workspace">
-<div id="play" class="play-area" aria-label="Free letter workspace"></div>
-<div id="resize" class="resize" role="separator" aria-label="Drag to resize workspace">
-<div class="handle"></div><div class="dots">••••••</div>
-<div>Drag bar to change workspace size</div>
-</div>
-</section>
+  <p class="section-label">LETTER WORKSPACE</p>
+  <div class="workspace-frame">
+    <div id="play-area" aria-label="Letter workspace"></div>
+    <div id="resize" title="Drag to resize workspace" aria-label="Resize workspace"></div>
+  </div>
 
-<div class="buttons">
-<button id="undo" type="button" aria-label="Undo">↶ Undo</button>
-<button id="redo" type="button" aria-label="Redo">↷ Redo</button>
-<button id="fill" type="button">Fill Boxes</button>
-<button id="shuffle" type="button">Shuffle</button>
-</div>
-<div class="extra"><button id="restart" class="primary" type="button">Restart</button></div>
-<div class="extra"><button id="instructions" type="button">Instructions</button></div>
-<div id="status" class="status" aria-live="polite">Enter letters above to begin.</div>
+  <div class="controls">
+    <button id="undo" type="button" disabled>↶ Undo</button>
+    <button id="redo" type="button" disabled>↷ Redo</button>
+    <button id="fill" type="button">Fill Boxes</button>
+    <button id="shuffle" type="button">Shuffle</button>
+    <button id="restart" type="button">Restart</button>
+    <button id="instructions" type="button">Instructions</button>
+  </div>
+
+  <div id="status" role="status">Enter a word above to get started.</div>
+  <p class="hint">Drag letters freely around the workspace. Drop a letter into an answer box when you're ready. Drag it back down to return it to the workspace.</p>
 </main>
+
 <script>
-(()=>{
-const $=id=>document.getElementById(id);
-let letters=[],size=0,nextId=1,history=[],future=[],drag=null;
-let areaHeight=155;
-const play=$("play"),answer=$("answer");
-function say(s){$("status").textContent=s}
-function snapshot(){return JSON.stringify({letters,size})}
-function save(){history.push(snapshot());if(history.length>80)history.shift();future=[];buttons()}
-function buttons(){$("undo").disabled=!history.length;$("redo").disabled=!future.length}
-function restore(s){const d=JSON.parse(s);letters=d.letters;size=d.size;render()}
-function recordUndo(){if(history.length){future.push(snapshot());restore(history.pop());buttons();say("Undone.")}}
-function recordRedo(){if(future.length){history.push(snapshot());restore(future.pop());buttons();say("Redone.")}}
-function occupied(i){return letters.find(t=>t.slot===i)}
-function render(){
- play.style.height=areaHeight+"px";
- play.replaceChildren();answer.replaceChildren();
- answer.style.justifyContent=size>12?"start":"center";
- answer.style.minWidth=size>12?"max-content":"100%";
- for(let i=0;i<size;i++){
-  const slot=document.createElement("div");slot.className="slot";slot.dataset.slot=i;
-  const t=occupied(i);
-  if(t){const tile=makeTile(t);tile.classList.add("in-slot");slot.appendChild(tile)}
-  answer.appendChild(slot);
- }
- letters.filter(t=>t.slot===null).forEach(t=>{
-  const tile=makeTile(t);
-  tile.style.left=t.x+"px";tile.style.top=t.y+"px";
-  play.appendChild(tile);
- });
- buttons();
-}
-function makeTile(t){
- const el=document.createElement("div");
- el.className="tile";el.textContent=t.ch;el.dataset.id=t.id;
- el.setAttribute("aria-label","Letter "+t.ch);
- el.addEventListener("pointerdown",e=>start(e,t,el));
- return el;
-}
-function addLetters(value){
- const chars=(value.toUpperCase().match(/[A-Z]/g)||[]);
- if(!chars.length){say("Please enter some letters first.");return}
- save();size=chars.length;
- letters=chars.map((ch,i)=>({id:nextId++,ch,slot:null,x:12+(i%5)*48,y:12+Math.floor(i/5)*49}));
- render();say(size+" letters added. Drag them freely or place them in the boxes.");
-}
+(() => {
+  const entry = document.getElementById("entry");
+  const form = document.getElementById("entry-form");
+  const answer = document.getElementById("answer");
+  const play = document.getElementById("play-area");
+  const resize = document.getElementById("resize");
+  const status = document.getElementById("status");
+  const undoButton = document.getElementById("undo");
+  const redoButton = document.getElementById("redo");
 
-function start(e,t,el){
- if(e.button!==undefined&&e.button!==0)return;
- e.preventDefault();
+  let tiles = [];
+  let nextId = 1;
+  let history = [];
+  let future = [];
+  let areaHeight = 250;
+  let activeDrag = null;
 
- const rect=el.getBoundingClientRect();
+  const copy = value => JSON.parse(JSON.stringify(value));
 
- drag={
-  t,
-  el,
-  fromSlot:t.slot,
-  startX:e.clientX,
-  startY:e.clientY,
-  dx:e.clientX-rect.left,
-  dy:e.clientY-rect.top,
-  moved:false
- };
-
- el.classList.add("dragging");
- el.style.position="fixed";
- el.style.left=rect.left+"px";
- el.style.top=rect.top+"px";
- el.style.width=rect.width+"px";
- el.style.height=rect.height+"px";
- el.style.zIndex="9999";
-
- document.body.appendChild(el);
-
- document.addEventListener("pointermove",move);
- document.addEventListener("pointerup",end);
- document.addEventListener("pointercancel",cancel);
-}
-
-function move(e){
- if(!drag)return;
- if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;
- drag.el.style.left=(e.clientX-drag.dx)+"px";drag.el.style.top=(e.clientY-drag.dy)+"px";
-}
-
-function end(e){
- if(!drag)return;
-
- const d=drag;
- const hit=document.elementFromPoint(e.clientX,e.clientY);
- const slotEl=hit&&hit.closest(".slot");
- const inPlay=hit&&hit.closest("#play");
-
- if(d.moved){
-  save();
-
-  const oldSlot=d.t.slot;
-
-  if(slotEl){
-   const index=Number(slotEl.dataset.slot);
-   const other=occupied(index);
-
-   if(other&&other.id!==d.t.id){
-    other.slot=oldSlot;
-   }
-
-   d.t.slot=index;
-   say("Letter "+d.t.ch+" placed in box "+(index+1)+".");
-
-  }else if(inPlay){
-   const r=play.getBoundingClientRect();
-
-   d.t.slot=null;
-   d.t.x=Math.max(0,Math.min(r.width-42,e.clientX-r.left-d.dx));
-   d.t.y=Math.max(0,Math.min(r.height-42,e.clientY-r.top-d.dy));
-
-   say("Letter moved in workspace.");
-
-  }else if(d.fromSlot!==null){
-   const r=play.getBoundingClientRect();
-
-   d.t.slot=null;
-   d.t.x=Math.max(0,Math.min(r.width-42,e.clientX-r.left-21));
-   d.t.y=Math.max(0,Math.min(r.height-42,e.clientY-r.top-21));
-
-   say("Letter returned to workspace.");
+  function snapshot() {
+    return { tiles: copy(tiles), areaHeight };
   }
- }
 
- cleanup();
- render();
-}
+  function saveHistory() {
+    history.push(snapshot());
+    if (history.length > 100) history.shift();
+    future = [];
+    updateHistoryButtons();
+  }
 
-function cleanup(){
- if(!drag)return;
- drag=null;
- document.removeEventListener("pointermove",move);
- document.removeEventListener("pointerup",end);
- document.removeEventListener("pointercancel",cancel);
-}
-function cancel(){cleanup();render()}
-$("entry").addEventListener("submit",e=>{e.preventDefault();addLetters($("letters").value)});
-$("undo").addEventListener("click",recordUndo);
-$("redo").addEventListener("click",recordRedo);
-$("fill").addEventListener("click",()=>{
- if(!letters.length)return;
- save();let n=0;
- for(let i=0;i<size;i++){const t=occupied(i);if(!t){const next=letters.find(x=>x.slot===null);if(next){next.slot=i;n++}}}
- render();say(n?"Filled "+n+" empty box(es).":"All boxes are already filled.");
-});
-$("shuffle").addEventListener("click",()=>{
- const free=letters.filter(t=>t.slot===null);
- if(free.length<2){say("At least two free letters are needed to shuffle.");return}
- save();const r=play.getBoundingClientRect();
- free.forEach(t=>{t.x=Math.random()*Math.max(1,r.width-44);t.y=Math.random()*Math.max(1,r.height-44)});
- render();say("Free letters shuffled.");
-});
-$("restart").addEventListener("click",()=>{
- save();letters=[];size=0;$("letters").value="";render();say("Ready for a new anagram.");
-});
-$("instructions").addEventListener("click",()=>say("Drag blue tiles anywhere in the grey area. Drag tiles to answer boxes to place them. Drag a placed tile back into the grey area to remove it. Use the bar to resize the workspace."));
-let resizing=false,startY=0,startHeight=0;
-$("resize").addEventListener("pointerdown",e=>{resizing=true;startY=e.clientY;startHeight=areaHeight;$("resize").setPointerCapture(e.pointerId)});
-$("resize").addEventListener("pointermove",e=>{if(!resizing)return;areaHeight=Math.max(90,Math.min(500,startHeight+e.clientY-startY));play.style.height=areaHeight+"px";render()});
-$("resize").addEventListener("pointerup",()=>resizing=false);
-$("resize").addEventListener("pointercancel",()=>resizing=false);
-buttons();
+  function updateHistoryButtons() {
+    undoButton.disabled = history.length === 0;
+    redoButton.disabled = future.length === 0;
+  }
+
+  function restore(state) {
+    tiles = copy(state.tiles);
+    areaHeight = state.areaHeight;
+    play.style.height = areaHeight + "px";
+    render();
+    updateHistoryButtons();
+  }
+
+  function say(message) {
+    status.textContent = message;
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function freePosition(index) {
+    const cols = Math.max(1, Math.floor((play.clientWidth - 12) / 48));
+    return {
+      x: 8 + (index % cols) * 47,
+      y: 8 + Math.floor(index / cols) * 48
+    };
+  }
+
+  function render() {
+    answer.replaceChildren();
+    play.replaceChildren();
+    play.style.height = areaHeight + "px";
+
+    if (tiles.length === 0) {
+      say("Enter a word above to get started.");
+    }
+
+    const count = tiles.length;
+
+    for (let i = 0; i < count; i++) {
+      const slot = document.createElement("div");
+      slot.className = "slot";
+      slot.dataset.slot = String(i);
+      slot.setAttribute("aria-label", "Answer box " + (i + 1));
+      answer.appendChild(slot);
+    }
+
+    for (const tile of tiles) {
+      const el = document.createElement("div");
+      el.className = "tile";
+      el.textContent = tile.letter;
+      el.dataset.id = String(tile.id);
+      el.setAttribute("role", "button");
+      el.setAttribute("aria-label", "Letter " + tile.letter + ". Drag to move.");
+      el.addEventListener("pointerdown", event => startDrag(event, tile.id));
+
+      if (tile.slot !== null) {
+        const slot = answer.children[tile.slot];
+        if (slot) slot.appendChild(el);
+      } else {
+        el.style.left = clamp(tile.x, 0, Math.max(0, play.clientWidth - 40)) + "px";
+        el.style.top = clamp(tile.y, 0, Math.max(0, areaHeight - 42)) + "px";
+        play.appendChild(el);
+      }
+    }
+
+    updateHistoryButtons();
+  }
+
+  function createWord(word) {
+    const letters = word.toUpperCase().replace(/[^A-Z]/g, "");
+    if (!letters) {
+      say("Please enter a word using letters A–Z.");
+      return;
+    }
+
+    saveHistory();
+    nextId = 1;
+    tiles = Array.from(letters, (letter, i) => {
+      const pos = freePosition(i);
+      return {
+        id: nextId++,
+        letter,
+        slot: null,
+        x: pos.x,
+        y: pos.y
+      };
+    });
+
+    render();
+    say("Created " + tiles.length + " letter tiles.");
+  }
+
+  function startDrag(event, id) {
+    if (event.button !== undefined && event.button !== 0) return;
+    if (activeDrag) return;
+
+    const tile = tiles.find(item => item.id === id);
+    if (!tile) return;
+
+    event.preventDefault();
+
+    const source = event.currentTarget;
+    const rect = source.getBoundingClientRect();
+    const ghost = source.cloneNode(true);
+    ghost.id = "ghost";
+    ghost.style.left = event.clientX + "px";
+    ghost.style.top = event.clientY + "px";
+    ghost.style.width = rect.width + "px";
+    ghost.style.height = rect.height + "px";
+    document.body.appendChild(ghost);
+    source.style.visibility = "hidden";
+
+    activeDrag = {
+      id,
+      oldSlot: tile.slot,
+      oldX: tile.x,
+      oldY: tile.y,
+      source,
+      ghost,
+      startX: event.clientX,
+      startY: event.clientY
+    };
+
+    document.addEventListener("pointermove", moveDrag);
+    document.addEventListener("pointerup", finishDrag);
+    document.addEventListener("pointercancel", cancelDrag);
+  }
+
+  function moveDrag(event) {
+    if (!activeDrag) return;
+    activeDrag.ghost.style.left = event.clientX + "px";
+    activeDrag.ghost.style.top = event.clientY + "px";
+
+    document.querySelectorAll(".slot.over").forEach(el => el.classList.remove("over"));
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const slot = target && target.closest(".slot");
+    if (slot) slot.classList.add("over");
+  }
+
+  function removeDragListeners() {
+    document.removeEventListener("pointermove", moveDrag);
+    document.removeEventListener("pointerup", finishDrag);
+    document.removeEventListener("pointercancel", cancelDrag);
+  }
+
+  function clearDragVisuals() {
+    if (!activeDrag) return;
+    activeDrag.ghost.remove();
+    activeDrag = null;
+    removeDragListeners();
+  }
+
+  function cancelDrag() {
+    if (!activeDrag) return;
+    clearDragVisuals();
+    render();
+  }
+
+  function finishDrag(event) {
+    if (!activeDrag) return;
+
+    const drag = activeDrag;
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const slotEl = target && target.closest(".slot");
+    const inPlay = target && (target === play || play.contains(target));
+    const tile = tiles.find(item => item.id === drag.id);
+
+    if (tile) {
+      let destinationSlot = null;
+
+      if (slotEl && answer.contains(slotEl)) {
+        destinationSlot = Number(slotEl.dataset.slot);
+      }
+
+      const playRect = play.getBoundingClientRect();
+      const droppedInPlay =
+        event.clientX >= playRect.left &&
+        event.clientX <= playRect.right &&
+        event.clientY >= playRect.top &&
+        event.clientY <= playRect.bottom;
+
+      if (destinationSlot !== null && Number.isInteger(destinationSlot)) {
+        saveHistory();
+
+        const occupant = tiles.find(item =>
+          item.id !== tile.id && item.slot === destinationSlot
+        );
+
+        if (occupant) {
+          if (drag.oldSlot !== null) {
+            occupant.slot = drag.oldSlot;
+          } else {
+            occupant.slot = null;
+            occupant.x = drag.oldX;
+            occupant.y = drag.oldY;
+          }
+        }
+
+        tile.slot = destinationSlot;
+        say("Letter " + tile.letter + " placed in box " + (destinationSlot + 1) + ".");
+      } else if (droppedInPlay || inPlay) {
+        saveHistory();
+        tile.slot = null;
+        tile.x = clamp(event.clientX - playRect.left - 20, 0, Math.max(0, play.clientWidth - 40));
+        tile.y = clamp(event.clientY - playRect.top - 21, 0, Math.max(0, areaHeight - 42));
+        say("Letter " + tile.letter + " returned to the workspace.");
+      } else {
+        say("Tile kept in its previous position.");
+      }
+    }
+
+    clearDragVisuals();
+    render();
+  }
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    createWord(entry.value);
+  });
+
+  undoButton.addEventListener("click", () => {
+    if (!history.length) return;
+    future.push(snapshot());
+    restore(history.pop());
+    say("Undone.");
+  });
+
+  redoButton.addEventListener("click", () => {
+    if (!future.length) return;
+    history.push(snapshot());
+    restore(future.pop());
+    say("Redone.");
+  });
+
+  document.getElementById("fill").addEventListener("click", () => {
+    if (!tiles.length) {
+      say("Enter a word first.");
+      return;
+    }
+
+    const freeTiles = tiles.filter(tile => tile.slot === null);
+    if (!freeTiles.length) {
+      say("All letters are already in answer boxes.");
+      return;
+    }
+
+    saveHistory();
+    const occupied = new Set(tiles.filter(tile => tile.slot !== null).map(tile => tile.slot));
+    let nextSlot = 0;
+
+    for (const tile of freeTiles) {
+      while (occupied.has(nextSlot)) nextSlot++;
+      tile.slot = nextSlot;
+      occupied.add(nextSlot);
+      nextSlot++;
+    }
+
+    render();
+    say("Filled the empty answer boxes.");
+  });
+
+  document.getElementById("shuffle").addEventListener("click", () => {
+    const freeTiles = tiles.filter(tile => tile.slot === null);
+    if (freeTiles.length < 2) {
+      say("You need at least two tiles in the workspace to shuffle.");
+      return;
+    }
+
+    saveHistory();
+    const positions = freeTiles.map((tile, i) => freePosition(i)).sort(() => Math.random() - 0.5);
+    freeTiles.forEach((tile, i) => {
+      tile.x = positions[i].x;
+      tile.y = positions[i].y;
+    });
+
+    render();
+    say("Workspace letters shuffled.");
+  });
+
+  document.getElementById("restart").addEventListener("click", () => {
+    if (!tiles.length) {
+      say("Enter a word first.");
+      return;
+    }
+
+    saveHistory();
+    tiles.forEach((tile, i) => {
+      tile.slot = null;
+      const pos = freePosition(i);
+      tile.x = pos.x;
+      tile.y = pos.y;
+    });
+    render();
+    say("All letters returned to the workspace.");
+  });
+
+  document.getElementById("instructions").addEventListener("click", () => {
+    say("Enter a word and press Create. Drag blue letters into the answer boxes, or move them freely in the workspace. Drag a placed letter back down to remove it. Undo and Redo reverse your changes.");
+  });
+
+  let resizeStart = null;
+
+  resize.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    resizeStart = { y: event.clientY, height: areaHeight };
+    resize.setPointerCapture(event.pointerId);
+  });
+
+  resize.addEventListener("pointermove", event => {
+    if (!resizeStart) return;
+    areaHeight = clamp(resizeStart.height + event.clientY - resizeStart.y, 150, 650);
+    play.style.height = areaHeight + "px";
+  });
+
+  function endResize() {
+    if (!resizeStart) return;
+    resizeStart = null;
+    render();
+  }
+
+  resize.addEventListener("pointerup", endResize);
+  resize.addEventListener("pointercancel", endResize);
+
+  render();
 })();
 </script>
 </body>
