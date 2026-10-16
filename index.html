@@ -221,7 +221,6 @@
     <input id="entry" type="text" placeholder="Enter a word, e.g. GOLDILOCKS"
       aria-label="Word to rearrange" autocomplete="off" spellcheck="false">
     <button class="primary" type="submit">Create</button>
-   <button id="reset" class="primary" type="button">Reset</button>
   </form>
 
   <p class="section-label">ANSWER</p>
@@ -604,23 +603,8 @@
   resize.addEventListener("pointerup", endResize);
   resize.addEventListener("pointercancel", endResize);
 
-
-
- 
-  document.getElementById("reset").addEventListener("click", () => {
-    entry.value = "";
-    tiles = [];
-    history = [];
-    future = [];
-    nextId = 1;
-    activeDrag = null;
-    form.reset();
-    render();
-  });
- 
   render();
 })();
 </script>
 </body>
 </html>
-
