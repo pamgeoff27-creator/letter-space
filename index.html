@@ -605,8 +605,17 @@
   resize.addEventListener("pointercancel", endResize);
 
 
+
+ 
   document.getElementById("reset").addEventListener("click", () => {
-    location.reload();
+    entry.value = "";
+    tiles = [];
+    history = [];
+    future = [];
+    nextId = 1;
+    activeDrag = null;
+    form.reset();
+    render();
   });
 
   render();
