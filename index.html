@@ -603,8 +603,10 @@
   resize.addEventListener("pointerup", endResize);
   resize.addEventListener("pointercancel", endResize);
 
+
+  document.getElementById("reset").addEventListener("click", () => {
+    location.reload();
+  });
+
   render();
 })();
-</script>
-</body>
-</html>
