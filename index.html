@@ -207,6 +207,12 @@
     .slot { width: 34px; flex-basis: 34px; }
     .controls button { padding: 10px 11px; }
   }
+ 
+#reset {
+  display: block;
+  margin: 8px 0 0 auto;
+}
+
 </style>
 </head>
 <body>
@@ -222,6 +228,7 @@
       aria-label="Word to rearrange" autocomplete="off" spellcheck="false">
     <button class="primary" type="submit">Create</button>
   </form>
+   <button id="reset" class="primary" type="button">Reset</button>
 
   <p class="section-label">ANSWER</p>
   <div class="answer-scroll">
@@ -580,6 +587,12 @@
     say("Enter a word and press Create. Drag blue letters into the answer boxes, or move them freely in the workspace. Drag a placed letter back down to remove it. Undo and Redo reverse your changes.");
   });
 
+   document.getElementById("reset").addEventListener("click", () => {
+    saveHistory();
+    tiles = [];
+    render();
+    say("Puzzle cleared. Enter a new word to begin.");
+  });
   let resizeStart = null;
 
   resize.addEventListener("pointerdown", event => {
