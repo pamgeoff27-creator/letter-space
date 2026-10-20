@@ -207,12 +207,6 @@
     .slot { width: 34px; flex-basis: 34px; }
     .controls button { padding: 10px 11px; }
   }
- 
-#reset {
-  display: block;
-  margin: 8px 0 0 auto;
-}
-
 </style>
 </head>
 <body>
@@ -228,7 +222,6 @@
       aria-label="Word to rearrange" autocomplete="off" spellcheck="false">
     <button class="primary" type="submit">Create</button>
   </form>
-   <button id="reset" class="primary" type="button">Reset</button>
 
   <p class="section-label">ANSWER</p>
   <div class="answer-scroll">
@@ -247,8 +240,7 @@
     <button id="fill" type="button">Fill Boxes</button>
     <button id="shuffle" type="button">Shuffle</button>
     <button id="restart" type="button">Restart</button>
-   <button id="instructions" type="button">Instructions</button>
-    <button id="solve" type="button">Solve</button>
+    <button id="instructions" type="button">Instructions</button>
   </div>
 
   <div id="status" role="status">Enter a word above to get started.</div>
@@ -267,7 +259,6 @@
   const redoButton = document.getElementById("redo");
 
   let tiles = [];
-   let correctAnswer = "";
   let nextId = 1;
   let history = [];
   let future = [];
@@ -359,13 +350,11 @@
 
   function createWord(word) {
     const letters = word.toUpperCase().replace(/[^A-Z]/g, "");
- 
     if (!letters) {
       say("Please enter a word using letters A–Z.");
       return;
     }
 
-     correctAnswer = letters;
     saveHistory();
     nextId = 1;
     tiles = Array.from(letters, (letter, i) => {
@@ -586,24 +575,11 @@
     render();
     say("All letters returned to the workspace.");
   });
-   document.getElementById("solve").addEventListener("click", () => {
-    if (!correctAnswer) {
-      say("Create a word first.");
-      return;
-    }
-    say("Answer: " + correctAnswer);
-  });
 
   document.getElementById("instructions").addEventListener("click", () => {
     say("Enter a word and press Create. Drag blue letters into the answer boxes, or move them freely in the workspace. Drag a placed letter back down to remove it. Undo and Redo reverse your changes.");
   });
 
-   document.getElementById("reset").addEventListener("click", () => {
-    saveHistory();
-    tiles = [];
-    render();
-    say("Puzzle cleared. Enter a new word to begin.");
-  });
   let resizeStart = null;
 
   resize.addEventListener("pointerdown", event => {
