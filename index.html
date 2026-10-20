@@ -241,6 +241,7 @@
     <button id="shuffle" type="button">Shuffle</button>
     <button id="restart" type="button">Restart</button>
     <button id="instructions" type="button">Instructions</button>
+   <button id="solve" type="button">Solve</button>
   </div>
 
   <div id="status" role="status">Enter a word above to get started.</div>
@@ -259,6 +260,7 @@
   const redoButton = document.getElementById("redo");
 
   let tiles = [];
+ let correctAnswer = "";
   let nextId = 1;
   let history = [];
   let future = [];
@@ -350,6 +352,7 @@
 
   function createWord(word) {
     const letters = word.toUpperCase().replace(/[^A-Z]/g, "");
+   correctAnswer = letters;
     if (!letters) {
       say("Please enter a word using letters A–Z.");
       return;
@@ -369,7 +372,7 @@
     });
 
     render();
-    say("Created " + tiles.length + " letter tiles.");
+    let tiles = [];
   }
 
   function startDrag(event, id) {
@@ -554,10 +557,19 @@
       tile.x = positions[i].x;
       tile.y = positions[i].y;
     });
-
+   
     render();
     say("Workspace letters shuffled.");
   });
+
+  document.getElementById("solve").addEventListener("click", () => {
+    if (!correctAnswer) {
+      say("Create a word first.");
+      return;
+    }
+    say("Answer: " + correctAnswer);
+  });
+
 
   document.getElementById("restart").addEventListener("click", () => {
     if (!tiles.length) {
