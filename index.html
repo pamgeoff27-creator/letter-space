@@ -247,7 +247,8 @@
     <button id="fill" type="button">Fill Boxes</button>
     <button id="shuffle" type="button">Shuffle</button>
     <button id="restart" type="button">Restart</button>
-    <button id="instructions" type="button">Instructions</button>
+   <button id="instructions" type="button">Instructions</button>
+    <button id="solve" type="button">Solve</button>
   </div>
 
   <div id="status" role="status">Enter a word above to get started.</div>
@@ -266,6 +267,7 @@
   const redoButton = document.getElementById("redo");
 
   let tiles = [];
+   let correctAnswer = "";
   let nextId = 1;
   let history = [];
   let future = [];
@@ -357,11 +359,13 @@
 
   function createWord(word) {
     const letters = word.toUpperCase().replace(/[^A-Z]/g, "");
+ 
     if (!letters) {
       say("Please enter a word using letters A–Z.");
       return;
     }
 
+     correctAnswer = letters;
     saveHistory();
     nextId = 1;
     tiles = Array.from(letters, (letter, i) => {
@@ -581,6 +585,13 @@
     });
     render();
     say("All letters returned to the workspace.");
+  });
+   document.getElementById("solve").addEventListener("click", () => {
+    if (!correctAnswer) {
+      say("Create a word first.");
+      return;
+    }
+    say("Answer: " + correctAnswer);
   });
 
   document.getElementById("instructions").addEventListener("click", () => {
